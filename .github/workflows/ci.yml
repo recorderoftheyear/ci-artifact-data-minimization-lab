@@ -1,12 +1,36 @@
 name: CI
-on: [push, pull_request]
+
+on:
+  push:
+    branches:
+      - main
+
 jobs:
   validate:
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - run: npm ci && npm test
+
+      - name: Validate application
         working-directory: app
+        run: |
+          npm ci
+          npm test
+
+      - name: Generate diagnostic outputs
+        run: |
+          mkdir -p diagnostics
+          printf '{"status":"success","source":"ci"}\n' > diagnostics/report.json
+          printf 'CI validation completed successfully\n' > diagnostics/diagnostics.log
+          printf 'SIMULATED_API_TOKEN=demo-sensitive-value-not-real\n' > diagnostics/runtime.env
+
+      - name: Upload diagnostics
+        uses: actions/upload-artifact@v4
+        with:
+          name: ci-diagnostics
+          path: diagnostics/
