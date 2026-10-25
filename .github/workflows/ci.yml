@@ -33,4 +33,6 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ci-diagnostics
-          path: diagnostics/
+          path: |
+            diagnostics/report.json
+            diagnostics/diagnostics.log
